@@ -1,0 +1,24 @@
+{
+  "name": "gis_sose_2021",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "@types/mongodb": "^3.6.18",
+    "mongodb": "^3.6.9"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alisaotto/GIS_SoSe_2021.git"
+  },
+  "author": "Alisa Otto",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/alisaotto/GIS_SoSe_2021/issues"
+  },
+  "homepage": "https://github.com/alisaotto/GIS_SoSe_2021#readme"
+}

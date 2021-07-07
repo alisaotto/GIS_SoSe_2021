@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="https://use.typekit.net/ktw2qqw.css">
+    <script src="../client.js" defer></script>
+    <title>♡ Favoriten | schmackofatz!</title>
+</head>
+
+<body onload="Client.handleInitFavorites()">
+    <header>
+        <div class="navigationDesktop">
+            <div class="menu">
+                <a href="http://127.0.0.1:5500/startseite.html"><img src="../Pictures/schmackofatz.png"
+                        alt="schmackofatz! Logo" id="logo" /></a>
+                        <a href="http://127.0.0.1:5500/startseite.html">Startseite</a>
+                        <a href="http://127.0.0.1:5500/favoriten.html">♡ Favoriten</a>
+                        <a href="http://127.0.0.1:5500/meinerezepte.html">Meine Rezepte</a>
+                <div class="logoutButton" id="logoutButton" onclick="Client.handleLogout()">
+                    <p id="logoutButtonText"></p>
+                </div>
+            </div>
+        </div>
+        <div class="navigationMobile">
+            <img src="../Pictures/schmackofatz.png" alt="schmackofatz Logo">
+            <div class="logoutButton" id="logoutButton" onclick="Client.handleLogout()">
+                <p id="logoutButtonTextMobile"></p>
+            </div>
+            <h1 id="openDropdown" onclick="Client.handleDropdown()">≡ MENU</h1>
+            <div id="dropdown" class="dropDownContent">
+                <a href="http://127.0.0.1:5500/startseite.html">Startseite</a>
+                <a href="http://127.0.0.1:5500/favoriten.html">♡ Favoriten</a>
+                <a href="http://127.0.0.1:5500/meinerezepte.html">Meine Rezepte</a>
+            </div>
+        </div>
+    </header>
+    <main>
+        <div class="favoritesStart">
+            <h1>Meine Favoriten</h1>
+            <p>Hier findest du alle deine Lieblingsrezepte.</p>
+            <form method="post" id="formularModalBox">
+                <div id="modalBox" class="modalBoxFavorites">
+                    <div class="modalText">
+                        <button type="button" id="favoriteButton" class="startPage"
+                            onclick="Client.handleToggleFavorite()"></button>
+                        <span id="close" onclick="Client.handleClose()">&times;</span>
+                        <h2 id="titleRecipe"></h2>
+                        <p>Rezeptname:</p>
+                        <input type="text" name="recipename" id="recipename" readonly="true">
+                        <p>Zutaten:</p>
+                        <div id="ingredients" class="list">
+                        </div>
+                        <p>Zubereitung:</p>
+                        <textarea id="preparation" name="preparation" readonly="true"></textarea>
+                        <br>
+                    </div>
+                </div>
+            </form>
+            <div id="favorites" onclick="Client.handleRecipe(event)"></div>
+        </div>
+    </main>
+</body>
+
+</html>
