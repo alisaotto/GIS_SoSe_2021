@@ -1,0 +1,370 @@
+@media (min-width: 0px) {
+    /*Desktop*/
+    html {
+        scroll-behavior: smooth;
+    }
+    body {
+        font-family: raleway, sans-serif;
+        font-weight: 300;
+        font-style: normal;
+        font-size: 1.3vw;
+        line-height: 2vw;
+        text-align: center;
+        height: 100%;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        overflow-x: hidden;
+    }
+    .navigationDesktop {
+        z-index: 100;
+        position: fixed;
+        background-color: white;
+        width: 100%;
+        height: 6vw;
+        top: 0;
+        border-bottom: solid rgb(230, 230, 230);
+        border-width: 1px;
+    }
+    .navigationMobile {
+        display: none;
+    }
+    .menu {
+        width: 99%;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+    }
+    #logo {
+        height: 5.5vw;
+        float: left;
+        margin-top: 0vw;
+        margin-right: auto;
+    }
+    .menu a {
+        position: relative;
+        line-height: 7vw;
+        align-items: center;
+        margin-right: auto;
+        text-decoration: none;
+        color: #525252;
+    }
+    .menu a:before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 2px;
+        top: 4.5vw;
+        bottom: 0;
+        left: 0;
+        background-color: #DBC7B3;
+        visibility: hidden;
+        transform: scaleX(0);
+        transition: all 0.3s ease-in-out;
+    }
+    .menu a:hover:before {
+        visibility: visible;
+        transform: scaleX(1);
+    }
+    .menu a:first-child:hover:before {
+        visibility: hidden;
+    }
+    .logoutButton {
+        float: right;
+        height: 3vw;
+        width: 10vw;
+        margin-top: 2vw;
+        margin-right: 15px;
+        line-height: 1vw;
+        background-color: #c7b4a2;
+        border-radius: 10px;
+        color: white;
+        font-weight: 600;
+        font-size: 1vw;
+        text-align: center;
+        transition: 0.30s ease-in-out;
+    }
+    .logoutButton:hover {
+        background-color: #DBC7B3;
+        cursor: pointer;
+    }
+    main {
+        width: 97%;
+        height: auto;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    /*Startseite*/
+    .heroshotContainer {
+        background-color: rgb(240, 240, 240);
+        margin-top: 8vw;
+        margin-bottom: 5vw;
+        display: flex;
+    }
+    .heroshot img {
+        height: 100%;
+        width: 100%;
+    }
+    .introduction {
+        background: rgb(240, 240, 240);
+        width: 100%;
+        padding: 1vh 1vh 1vh 1vh;
+    }
+    #scroll a {
+        font-size: 3vw;
+        text-decoration: none;
+        color: black;
+    }
+    /*Meine Rezepte*/
+    .recipesStart {
+        margin-top: 8vw;
+    }
+    #plusButton {
+        margin-top: 1vw;
+        height: 5vw;
+        cursor: pointer;
+    }
+    /*Modal Box für Startseite + Favoriten + Meine Rezepte
+    https://www.w3schools.com/howto/howto_css_modals.asp */
+    #modalBox {
+        display: none;
+        overflow: auto;
+        position: absolute;
+        z-index: 100;
+        height: auto;
+        width: 100%;
+        top: -10vw;
+        left: 0;
+        right: 0;
+        padding-bottom: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        /*transparentes Schwarz durch 0.4*/
+    }
+    #favoriteButton {
+        /*für Startseite und Favoriten*/
+        background-color: #c5b29f;
+        color: white;
+        font-size: 1.5vw;
+        border: none;
+        height: 3vw;
+        width: 20vw;
+        border-radius: 10px;
+        margin: auto;
+        cursor: pointer;
+    }
+    .modalText {
+        display: block;
+        background-color: white;
+        margin-top: 12%;
+        padding: 3vw 2vw;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    #recipename {
+        width: 70%;
+        height: 2vw;
+        margin-bottom: 2vw;
+        font-family: raleway, sans-serif;
+    }
+    .list input {
+        width: 70%;
+        height: 3vw;
+        border: none;
+        font-family: raleway, sans-serif;
+    }
+    .list input:focus {
+        outline: none;
+    }
+    .list input:nth-child(2n+0) {
+        /*Pseudoselektor, welcher nur auf Elemente 2,4,6 etc. zugreift*/
+        background-color: #f8f4ef;
+    }
+    .list input:nth-child(2n+1) {
+        background-color: #e7dcd2;
+    }
+    #preparation {
+        height: 20vw;
+        width: 70%;
+        font-family: raleway, sans-serif;
+    }
+    #saveButton {
+        margin-top: 2vw;
+        height: 5vw;
+        width: 20vw;
+        color: white;
+        font-size: 1.5vw;
+        background-color: #c5b29f;
+        border: none;
+        cursor: pointer;
+    }
+    #close {
+        color: #c7b4a2;
+        float: right;
+        margin-top: -3vw;
+        margin-right: -1vw;
+        font-size: 7vw;
+        cursor: pointer;
+    }
+    /*Startseite*/
+    .allRecipes {
+        display: block;
+    }
+    #recipes {
+        margin-top: 5vw;
+    }
+    #recipes h2 {
+        width: 80%;
+        height: 10vw;
+        margin: auto;
+        line-height: 10vw;
+    }
+    /*Meine Rezepte*/
+    #recipes h2:nth-child(2n+0) {
+        background-color: #f8f4ef;
+    }
+    #recipes h2:nth-child(2n+1) {
+        background-color: #e7dcd2;
+    }
+    #delete, #edit {
+        cursor: pointer;
+        margin-top: 1vw;
+        margin-right: 1vw;
+        height: 2.5vw;
+        float: right;
+    }
+    /*Startseite*/
+    #show {
+        /*Brille*/
+        cursor: pointer;
+        height: 2.5vw;
+        margin-left: 2vw;
+        margin-top: 1vw;
+    }
+    /*Favoriten*/
+    .favoritesStart {
+        margin-top: 8vw;
+    }
+    #toggleFavorite, #deleteFavorite, #showFavorite {
+        cursor: pointer;
+        height: 2.5vw;
+        margin-top: 1vw;
+        margin-left: 2vw;
+    }
+    @media only screen and (max-width: 768px) {
+        /*Tablet*/
+        body {
+            font-size: 2vw;
+            line-height: 2.5vw;
+        }
+        .introduction {
+            font-size: 1.5vw;
+            ;
+        }
+        .introduction h1 {
+            line-height: 3vw;
+            ;
+        }
+        .logoutButton {
+            margin-top: 1.5vw;
+            height: 3.5vw;
+            font-size: 1.4vw;
+        }
+        #edit, #delete, #show, #deleteFavorite, #showFavorite {
+            height: 4vw;
+        }
+        #favoriteButton, #saveButton, #recipename {
+            height: 5vw;
+            width: 40vw;
+            font-size: 3vw;
+        }
+        input, textarea {
+            font-size: 1.9vw;
+        }
+        #plusButton {
+            height: 7vw;
+        }
+        .heroshotContainer h1 {
+            font-size: 3vw;
+        }
+        #preparation{
+            height: 50vw;
+            width: 100%;
+        }
+    }
+    @media only screen and (max-width: 480px) {
+        /*Mobile*/
+        main {
+            margin-top: -7vw;
+            font-size: 3vw;
+        }
+        .navigationDesktop {
+            display: none;
+        }
+        .navigationMobile {
+            display: block;
+            font-size: 2vw;
+            margin-top: -10px;
+            width: 100%;
+            z-index: 1;
+            border-bottom: 1px solid #d6d6d6;
+        }
+        .logoutButton {
+            position: absolute;
+            right: -1vw;
+            width: 25vw;
+            margin-top: 0.8vw;
+            height: 5vw;
+            font-size: 3vw;
+            padding-bottom: 1.2vw;
+        }
+        .navigationMobile img {
+            height: 15vw;
+        }
+        .navigationMobile h1 {
+            text-align: left;
+            margin-left: 2vw;
+            cursor: pointer;
+        }
+        .dropDownContent {
+            z-index: 1;
+            display: none;
+            position: absolute;
+            padding: 10px;
+            background-color: #f3f0ec;
+            border: 1px solid grey;
+            width: 100%;
+            line-height: 6vw;
+            font-size: 3vw;
+        }
+        .dropDownContent a {
+            display: block;
+            text-align: left;
+            text-decoration: none;
+            color: black;
+        }
+        .show {
+            /*Menü Anzeige*/
+            display: block;
+        }
+        .recipesStart, .favoritesStart {
+            margin-top: 12vw;
+        }
+        #plusButton {
+            height: 10vw;
+        }
+        #delete, #edit, #deleteFavorite, #showFavorite, #show {
+            height: 5.5vw;
+            margin-left: 20px;
+        }
+        .list input {
+            width: 100%;
+        }
+        #close {
+            margin-top: -2vw;
+            font-size: 10vw;
+        }
+    }
+}
