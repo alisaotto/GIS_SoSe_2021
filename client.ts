@@ -179,7 +179,12 @@ namespace Client {
         if (username != null && username != "" && recipeID != null && recipeID != "") {
             let responseText: string = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
             if (responseText != "") {
-                window.alert("Das Rezept wurde erfolgreich zu deinen Favoriten hinzugefügt!");
+                let favoriteButton: HTMLElement = <HTMLElement>document.getElementById("favoriteButton");
+                if (favoriteButton.className == "") {
+                    window.alert("Das Rezept wurde erfolgreich zu deinen Favoriten hinzugefügt!");
+                } else {
+                    window.alert("Das Rezept wurde erfolgreich aus deinen Favoriten entfernt!");
+                }
                 await setButtonFavorite();
                 return;
             }
@@ -348,6 +353,7 @@ namespace Client {
             return;
         }
         element.innerHTML = "Zu Favoriten hinzufügen";
+        element.className = "";
         element.style.display = "block";
         let allRecipes: Array<AllRecipes> = await handleReadAllRecipes();
         if (allRecipes == null) {
@@ -362,6 +368,7 @@ namespace Client {
             return;
         }
         element.innerHTML = "Aus Favoriten entfernen";
+        element.className = "X";
     }
 
     function setModalTitle(_mode: string): void {
