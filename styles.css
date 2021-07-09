@@ -222,9 +222,6 @@
     .allRecipes {
         display: block;
     }
-    #recipes {
-        margin-top: 5vw;
-    }
     #recipes h2 {
         width: 80%;
         height: 10vw;
@@ -250,8 +247,8 @@
         /*Brille*/
         cursor: pointer;
         height: 2.5vw;
-        margin-left: 2vw;
-        margin-top: 1vw;
+        float: right;
+        margin-right: 3vw;
     }
     /*Favoriten*/
     .favoritesStart {
@@ -398,8 +395,9 @@
             margin-top: -2vw;
             font-size: 10vw;
         }
-        #recipes h2 {
+        #recipeWorldList h2 {
             font-size: 4vw;
+            line-height: 7vw;
         }
         #show {
             /*Brille*/
