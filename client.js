@@ -424,7 +424,7 @@ var Client;
         if (index < 0) {
             return false;
         }
-        fillFields(allRecipes[index].recipe, true);
+        fillFields(allRecipes[index].recipe, false);
         return true;
     }
     function fillFields(_recipe, _readOnly) {

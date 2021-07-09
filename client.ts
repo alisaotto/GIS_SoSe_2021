@@ -425,7 +425,7 @@ namespace Client {
         if (index < 0) {
             return false;
         }
-        fillFields(allRecipes[index].recipe, true);
+        fillFields(allRecipes[index].recipe, false);
         return true;
     }
 

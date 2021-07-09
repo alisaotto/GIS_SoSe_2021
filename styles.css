@@ -240,7 +240,7 @@
     }
     #delete, #edit, #deleteFavorite, #showFavorite {
         cursor: pointer;
-        margin-top: 1vw;
+        margin-top: -0.3vw;
         margin-right: 1vw;
         height: 2.5vw;
         float: right;
@@ -263,14 +263,18 @@
         margin-top: 1vw;
         margin-left: 2vw;
     }
-    @media only screen and (max-width: 768px) { /*Tablet*/
+    @media only screen and (max-width: 768px) {
         /*Tablet*/
         body {
-            font-size: 2vw;
+            font-size: 2.2vw;
             line-height: 2.5vw;
         }
+        .heroshotContainer {
+            display: block;
+        }
         .introduction {
-            font-size: 1.5vw;
+            font-size: 2.2vw;
+            line-height: 3vw;
         }
         .introduction h1 {
             line-height: 3vw;
@@ -281,7 +285,8 @@
             font-size: 1.4vw;
         }
         #edit, #delete, #show, #deleteFavorite, #showFavorite {
-            height: 4vw;
+            margin-top: -1vw;
+            height: 3.9vw;
         }
         #favoriteButton, #saveButton, #recipename {
             height: 5vw;
@@ -297,14 +302,9 @@
         .heroshotContainer h1 {
             font-size: 3vw;
         }
-        #preparation{
+        #preparation {
             height: 50vw;
             width: 100%;
-        }        
-        .recipeWorldButton {
-            height: 6vw;
-            width: 20vw;
-            font-size: 2vw;
         }
     }
     @media only screen and (max-width: 480px) {
@@ -366,7 +366,6 @@
             background-color: rgb(240, 240, 240);
             margin-top: 8vw;
             margin-bottom: 5vw;
-            display: block;
         }
         .heroshot img {
             height: 100%;
