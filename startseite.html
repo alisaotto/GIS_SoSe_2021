@@ -27,7 +27,7 @@
         </div>
         <div class="navigationMobile">
             <img src="Pictures/schmackofatz.png" alt="schmackofatz Logo">
-            <div class="logoutButton" id="logoutButton" onclick="Client.handleLogout()">
+            <div class="logoutButton" onclick="Client.handleLogout()">
                 <p id="logoutButtonTextMobile"></p>
             </div>
             <h1 id="openDropdown" onclick="Client.handleDropdown()">≡ MENU</h1>
@@ -46,17 +46,16 @@
             </div>
             <div class="introduction">
                 <h1 id="recipeWorld">Deine Rezeptewelt</h1>
-                <p>Schluss mit lästigen Kochbüchern - Bei schmackofatz findest du die leckersten Rezepte, die nur darauf
+                <div>Schluss mit lästigen Kochbüchern - Bei schmackofatz findest du die leckersten Rezepte, die nur darauf
                     warten, von dir nachgekocht zu werden.
                     Lass dich inspirieren, teile deine eigenen Rezepte mit der schmackofatz-Community und speichere
                     deine
                     Lieblingsrezepte für später ab.
                     <br> <br>
                     <b>Guten Appetit!</b>
-                    <a href="#recipeWorldList">
-                        <p id="scroll">↓</p>
-                    </a>
-                </p>
+                    <br>
+                    <a href="#recipeWorldList" id="scroll">↓</a>
+                </div>
             </div>
         </div>
         <h1>Rezeptewelt</h1>
@@ -66,14 +65,14 @@
                 <div class="modalText">
                     <button type="button" id="favoriteButton" onclick="Client.handleToggleFavorite()"></button>
                     <span id="close" onclick="Client.handleClose()">&times;</span>
-                    <h2 id="titleRecipe"></h2>
+                    <h2 id="titleRecipe">Titel</h2>
                     <p>Rezeptname:</p>
-                    <input type="text" name="recipename" id="recipename" readonly="true">
+                    <input type="text" name="recipename" id="recipename" readonly>
                     <p>Zutaten:</p>
                     <div id="ingredients" class="list">
                     </div>
                     <p>Zubereitung:</p>
-                    <textarea id="preparation" name="preparation" readonly="true"></textarea>
+                    <textarea id="preparation" name="preparation" readonly></textarea>
                     <br>
                 </div>
             </div>

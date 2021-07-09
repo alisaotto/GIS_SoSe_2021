@@ -27,7 +27,7 @@
         </div>
         <div class="navigationMobile">
             <img src="Pictures/schmackofatz.png" alt="schmackofatz Logo">
-            <div class="logoutButton" id="logoutButton" onclick="Client.handleLogout()">
+            <div class="logoutButton" onclick="Client.handleLogout()">
                 <p id="logoutButtonTextMobile"></p>
             </div>
             <h1 id="openDropdown" onclick="Client.handleDropdown()">≡ MENU</h1>
@@ -48,9 +48,9 @@
             <div id="modalBox" class="modalBoxMyRecipes">
                 <div class="modalText">
                     <span id="close" onclick="Client.handleClose()">&times;</span>
-                    <h2 id="titleRecipe"></h2>
+                    <h2 id="titleRecipe">Titel</h2>
                     <p>Rezeptname:</p>
-                    <input type="text" name="recipename" id="recipename" required="true">
+                    <input type="text" name="recipename" id="recipename" required />
                     <p>Zutaten:</p>
                     <div id="ingredients" class="list">
                     </div>
