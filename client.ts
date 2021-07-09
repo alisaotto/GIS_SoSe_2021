@@ -23,7 +23,7 @@ namespace Client {
 
     async function getResponseText(_urlParam: string): Promise<string> {
         let formData: FormData = new FormData(document.forms[0]);
-        let url: string = "https://gis21.herokuapp.com/"; //http://localhost:8100
+        let url: string = "https://gis21.herokuapp.com/GIS_SoSe_2021/"; //http://localhost:8100
         let query: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
         url = url + _urlParam + "&" + query.toString();
         let response: Response = await fetch(url, { method: "get" });

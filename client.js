@@ -25,7 +25,7 @@ var Client;
     Client.handleInitFavorites = handleInitFavorites;
     async function getResponseText(_urlParam) {
         let formData = new FormData(document.forms[0]);
-        let url = "https://gis21.herokuapp.com/"; //http://localhost:8100
+        let url = "https://gis21.herokuapp.com/GIS_SoSe_2021/"; //http://localhost:8100
         let query = new URLSearchParams(formData);
         url = url + _urlParam + "&" + query.toString();
         let response = await fetch(url, { method: "get" });
