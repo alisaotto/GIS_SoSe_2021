@@ -332,13 +332,16 @@ var Client;
         modalBox.style.display = "none";
     }
     function setButtonLogout() {
-        let element = document.getElementById("logoutButtonText");
+        let elementDesktop = document.getElementById("logoutButtonText");
+        let elementMobile = document.getElementById("logoutButtonTextMobile");
         let username = localStorage.getItem("Username");
         if (username == null || username == "") {
-            element.innerText = "ANMELDEN";
+            elementDesktop.innerText = "ANMELDEN";
+            elementMobile.innerText = "ANMELDEN";
         }
         else {
-            element.innerText = "ABMELDEN";
+            elementDesktop.innerText = "ABMELDEN";
+            elementMobile.innerText = "ABMELDEN";
         }
     }
     async function setButtonFavorite() {
@@ -388,7 +391,7 @@ var Client;
     }
     function clearInputFields() {
         let recipe = { recipeID: null, recipename: "", ingredients: new Array(), preparation: "" };
-        fillFields(recipe, true);
+        fillFields(recipe, false);
     }
     async function fillInputFields() {
         let user = await handleReadUser();

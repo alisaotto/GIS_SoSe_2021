@@ -327,7 +327,7 @@
         .logoutButton {
             position: absolute;
             right: -1vw;
-            width: 25vw;
+            width: 30vw;
             margin-top: 0.8vw;
             height: 5vw;
             font-size: 3vw;
@@ -362,6 +362,23 @@
             /*Menü Anzeige*/
             display: block;
         }
+        .heroshotContainer {
+            background-color: rgb(240, 240, 240);
+            margin-top: 8vw;
+            margin-bottom: 5vw;
+            display: block;
+        }
+        .heroshot img {
+            height: 100%;
+            width: 100%;
+        }
+        .introduction {
+            background: rgb(240, 240, 240);
+            width: auto;
+            padding: 1vh 1vh 1vh 1vh;
+            font-size: 3vw;
+            line-height: 4vw;
+        }
         .recipesStart, .favoritesStart {
             margin-top: 12vw;
         }
@@ -384,6 +401,11 @@
         }
         #recipes h2 {
             font-size: 4vw;
+        }
+        #show {
+            /*Brille*/
+            height: 6vw;
+            margin-left: 6vw;
         }
     }
 }

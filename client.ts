@@ -332,12 +332,15 @@ namespace Client {
     }
 
     function setButtonLogout(): void {
-        let element: HTMLElement = document.getElementById("logoutButtonText");
+        let elementDesktop: HTMLElement = document.getElementById("logoutButtonText");
+        let elementMobile: HTMLElement = document.getElementById("logoutButtonTextMobile");
         let username: string = localStorage.getItem("Username");
         if (username == null || username == "") {
-            element.innerText = "ANMELDEN";
+            elementDesktop.innerText = "ANMELDEN";
+            elementMobile.innerText = "ANMELDEN";
         } else {
-            element.innerText = "ABMELDEN";
+            elementDesktop.innerText = "ABMELDEN";
+            elementMobile.innerText = "ABMELDEN";
         }
     }
 
@@ -387,7 +390,7 @@ namespace Client {
 
     function clearInputFields(): void {
         let recipe: Recipe = { recipeID: null, recipename: "", ingredients: new Array<string>(), preparation: "" };
-        fillFields(recipe, true);
+        fillFields(recipe, false);
     }
 
     async function fillInputFields(): Promise<boolean> {
