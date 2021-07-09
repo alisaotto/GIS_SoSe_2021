@@ -144,7 +144,7 @@ namespace Client {
             modalBox.scrollIntoView(true);
             return;
         }
-        window.alert("Da Rezept kann nicht angezeigt werden.");
+        window.alert("Das Rezept kann nicht angezeigt werden.");
     }
 
     async function handleDeleteFavorite(): Promise<void> {
@@ -153,12 +153,12 @@ namespace Client {
         if (recipeID != null && recipeID != "") {
             let responseText: string = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
             if (responseText != "") {
-                window.alert("Dein Favorit wurde erfolgreich geändert!");
+                window.alert("Dein Favorit wurde erfolgreich gelöscht!");
                 listMyFavorites();
                 return;
             }
         }
-        window.alert("Dein Favorit konnte nicht geändert werden.");
+        window.alert("Dein Favorit konnte nicht gelöscht werden.");
     }
 
     async function handleShowFavorite(): Promise<void> {
@@ -170,7 +170,7 @@ namespace Client {
             modalBox.scrollIntoView(true);
             return;
         }
-        window.alert("Da Rezept kann nicht angezeigt werden.");
+        window.alert("Das Rezept kann nicht angezeigt werden.");
     }
 
     export async function handleToggleFavorite(): Promise<void> {
@@ -179,12 +179,12 @@ namespace Client {
         if (username != null && username != "" && recipeID != null && recipeID != "") {
             let responseText: string = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
             if (responseText != "") {
-                window.alert("Dein Favorit wurde erfolgreich geändert!");
+                window.alert("Das Rezept wurde erfolgreich zu deinen Favoriten hinzugefügt!");
                 await setButtonFavorite();
                 return;
             }
         }
-        window.alert("Dein Favorit konnte nicht geändert werden.");
+        window.alert("Das Rezept konnte nicht zu deinen Favoriten hinzugefügt werden.");
     }
 
     async function handleReadUser(): Promise<User> {
@@ -264,7 +264,7 @@ namespace Client {
             return;
         }
         window.location.pathname = "GIS_SoSe_2021/startseite.html";
-        window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde Dich an!");
+        window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde dich an!");
     }
 
     async function listMyFavorites(): Promise<void> {
@@ -297,7 +297,7 @@ namespace Client {
             return;
         }
         window.location.pathname = "GIS_SoSe_2021/startseite.html";
-        window.alert("Deine Favoriten können nicht gelesen werden. Bitte melde Dich an!");
+        window.alert("Deine Favoriten können nicht gelesen werden. Bitte melde dich an!");
     }
 
     async function listAllRecipes(): Promise<void> {

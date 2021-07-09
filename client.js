@@ -149,7 +149,7 @@ var Client;
             modalBox.scrollIntoView(true);
             return;
         }
-        window.alert("Da Rezept kann nicht angezeigt werden.");
+        window.alert("Das Rezept kann nicht angezeigt werden.");
     }
     async function handleDeleteFavorite() {
         let username = localStorage.getItem("Username");
@@ -157,12 +157,12 @@ var Client;
         if (recipeID != null && recipeID != "") {
             let responseText = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
             if (responseText != "") {
-                window.alert("Dein Favorit wurde erfolgreich geändert!");
+                window.alert("Dein Favorit wurde erfolgreich gelöscht!");
                 listMyFavorites();
                 return;
             }
         }
-        window.alert("Dein Favorit konnte nicht geändert werden.");
+        window.alert("Dein Favorit konnte nicht gelöscht werden.");
     }
     async function handleShowFavorite() {
         if (await fillTextFields() == true) {
@@ -173,7 +173,7 @@ var Client;
             modalBox.scrollIntoView(true);
             return;
         }
-        window.alert("Da Rezept kann nicht angezeigt werden.");
+        window.alert("Das Rezept kann nicht angezeigt werden.");
     }
     async function handleToggleFavorite() {
         let username = localStorage.getItem("Username");
@@ -181,12 +181,12 @@ var Client;
         if (username != null && username != "" && recipeID != null && recipeID != "") {
             let responseText = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
             if (responseText != "") {
-                window.alert("Dein Favorit wurde erfolgreich geändert!");
+                window.alert("Das Rezept wurde erfolgreich zu deinen Favoriten hinzugefügt!");
                 await setButtonFavorite();
                 return;
             }
         }
-        window.alert("Dein Favorit konnte nicht geändert werden.");
+        window.alert("Das Rezept konnte nicht zu deinen Favoriten hinzugefügt werden.");
     }
     Client.handleToggleFavorite = handleToggleFavorite;
     async function handleReadUser() {
@@ -264,7 +264,7 @@ var Client;
             return;
         }
         window.location.pathname = "GIS_SoSe_2021/startseite.html";
-        window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde Dich an!");
+        window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde dich an!");
     }
     async function listMyFavorites() {
         let favoritesList = document.getElementById("favoritesList");
@@ -298,7 +298,7 @@ var Client;
             return;
         }
         window.location.pathname = "GIS_SoSe_2021/startseite.html";
-        window.alert("Deine Favoriten können nicht gelesen werden. Bitte melde Dich an!");
+        window.alert("Deine Favoriten können nicht gelesen werden. Bitte melde dich an!");
     }
     async function listAllRecipes() {
         let recipeWorldList = document.getElementById("recipeWorldList");
