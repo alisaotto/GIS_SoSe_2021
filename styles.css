@@ -119,6 +119,11 @@
     .recipesStart {
         margin-top: 8vw;
     }
+    #plusImage {
+        height: 1.5vw;
+        margin-left: 10px;
+        margin-right: 10px;
+    }
     #plusButton {
         margin-top: 1vw;
         height: 5vw;
@@ -185,12 +190,17 @@
     .list input:nth-child(2n+1) {
         background-color: #e7dcd2;
     }
+    #ingredientsButton {
+        height: 3vw;
+        display: list-item;
+        margin: 1vw auto 3vw auto;
+        cursor: pointer;
+    }
     #preparation {
         height: 20vw;
         width: 70%;
-        font-family: raleway, sans-serif;
     }
-    #saveButton {
+    #save {
         margin-top: 2vw;
         height: 5vw;
         width: 20vw;
@@ -228,7 +238,7 @@
     #recipes h2:nth-child(2n+1) {
         background-color: #e7dcd2;
     }
-    #delete, #edit {
+    #delete, #edit, #deleteFavorite, #showFavorite {
         cursor: pointer;
         margin-top: 1vw;
         margin-right: 1vw;
@@ -253,7 +263,7 @@
         margin-top: 1vw;
         margin-left: 2vw;
     }
-    @media only screen and (max-width: 768px) {
+    @media only screen and (max-width: 768px) { /*Tablet*/
         /*Tablet*/
         body {
             font-size: 2vw;
@@ -261,11 +271,9 @@
         }
         .introduction {
             font-size: 1.5vw;
-            ;
         }
         .introduction h1 {
             line-height: 3vw;
-            ;
         }
         .logoutButton {
             margin-top: 1.5vw;
@@ -292,6 +300,11 @@
         #preparation{
             height: 50vw;
             width: 100%;
+        }        
+        .recipeWorldButton {
+            height: 6vw;
+            width: 20vw;
+            font-size: 2vw;
         }
     }
     @media only screen and (max-width: 480px) {
@@ -352,10 +365,13 @@
         .recipesStart, .favoritesStart {
             margin-top: 12vw;
         }
+        #plusImage {
+            height: 3.5vw;
+        }
         #plusButton {
             height: 10vw;
         }
-        #delete, #edit, #deleteFavorite, #showFavorite, #show {
+        #delete, #edit, #deleteFavorite, #showFavorite {
             height: 5.5vw;
             margin-left: 20px;
         }
@@ -365,6 +381,9 @@
         #close {
             margin-top: -2vw;
             font-size: 10vw;
+        }
+        #recipes h2 {
+            font-size: 4vw;
         }
     }
 }

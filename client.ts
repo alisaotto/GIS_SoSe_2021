@@ -2,12 +2,11 @@ namespace Client {
     export function handleInitStartPage(): void {
         setModalBox();
         setButtonLogout();
-        readAllRecipes();
         listAllRecipes();
     }
 
     export function handleInitLogin(): void {
-        readAllRecipes();
+        return;
     }
 
     export function handleInitMyRecipes(): void {
@@ -19,14 +18,57 @@ namespace Client {
     export function handleInitFavorites(): void {
         setModalBox();
         setButtonLogout();
-        readAllRecipes();
         listMyFavorites();
     }
 
-    export async function handleLogin(): Promise<void> {
-        let responseText: string = await getResponseText("?function=login&");
+    async function getResponseText(_urlParam: string): Promise<string> {
+        let formData: FormData = new FormData(document.forms[0]);
+        let url: string = "https://gis21.herokuapp.com/"; //http://localhost:8100
+        let query: URLSearchParams = new URLSearchParams(<URLSearchParams>formData);
+        url = url + _urlParam + "&" + query.toString();
+        let response: Response = await fetch(url, { method: "get" });
+        return await response.text();
+    }
+
+    export function handleRecipe(_event: Event): void {
+        let image: HTMLImageElement = _event.target as HTMLImageElement;
+        if (image == null) {
+            return;
+        }
+        localStorage.setItem("RecipeID", image.className);
+        if (image.id == "delete") {
+            handleDeleteRecipe();
+        } else if (image.id == "edit") {
+            handleEditRecipe();
+        } else if (image.id == "show") {
+            handleShowRecipe();
+        } else if (image.id == "deleteFavorite") {
+            handleDeleteFavorite();
+        } else if (image.id == "showFavorite") {
+            handleShowFavorite();
+        }
+    }
+
+    export async function handleRegistration(): Promise<void> {
+        let username: HTMLInputElement = <HTMLInputElement>document.getElementById("username");
+        let password: HTMLInputElement = <HTMLInputElement>document.getElementById("password");
+        if (username.value == null || username.value == "" || password.value == null || password.value == "") {
+            window.alert("Du musst einen Benutzernamen und ein Passwort eingeben.");
+            return;
+        }
+        let responseText: string = await getResponseText("?function=registration");
         if (responseText != "") {
-            localStorage.setItem("User", responseText);
+            window.alert("Du hast dich für schmackofatz! registriert. Du kannst dich nun login.");
+        } else {
+            window.alert("Registration fehlgeschlagen. Dieser Benutzername ist leider schon vergeben.");
+        }
+    }
+
+    export async function handleLogin(): Promise<void> {
+        let responseText: string = await getResponseText("?function=login");
+        if (responseText != "") {
+            let username: string = JSON.parse(responseText);
+            localStorage.setItem("Username", username);
             localStorage.removeItem("RecipeID");
             window.alert("Du hast dich erfolgreich eingeloggt.");
             window.location.pathname = "startseite.html";
@@ -36,17 +78,134 @@ namespace Client {
         }
     }
 
-    export async function handleRegistration(): Promise<void> {
-        let responseText: string = await getResponseText("?function=registration&");
+    export async function handleSaveRecipe(): Promise<void> {
+        let recipename: HTMLInputElement = <HTMLInputElement>document.getElementById("recipename");
+        if (recipename.value == null || recipename.value == "") {
+            window.alert("Bitte gebe einen Rezeptnamen an!");
+            return;
+        }
+        let modal: HTMLElement = <HTMLElement>document.getElementById("titleRecipe");
+        let mode: string = modal.className;
+        let recipeID: string = null;
+        let username: string = localStorage.getItem("Username");
+        if (username != null && username != "") {
+            if (mode == "edit") {
+                recipeID = localStorage.getItem("RecipeID");
+            } else if (mode == "add") {
+                recipeID = "";
+            }
+        }
+        if (recipeID != null) {
+            let responseText: string = await getResponseText("?function=saveRecipe&mode=" + mode + "&username=" + username + "&recipeID=" + recipeID);
+            if (responseText != "") {
+                localStorage.removeItem("RecipeID");
+                let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
+                modalBox.style.display = "none";
+                window.alert("Dein Rezept wurde erfolgreich gespeichert!");
+                window.location.pathname = "meinerezepte.html";
+                return;
+            }
+        }
+        window.alert("Dein Rezept konnte nicht gespeichert werden.");
+    }
+
+    async function handleDeleteRecipe(): Promise<void> {
+        let username: string = localStorage.getItem("Username");
+        let recipeID: string = localStorage.getItem("RecipeID");
+        if (username != null && username != "" && recipeID != null && recipeID != "") {
+            let responseText: string = await getResponseText("?function=deleteRecipe&username=" + username + "&recipeID=" + recipeID);
+            if (responseText != "") {
+                localStorage.removeItem("RecipeID");
+                window.alert("Dein Rezept wurde erfolgreich gelöscht!");
+                window.location.pathname = "meinerezepte.html";
+                return;
+            }
+        }
+        window.alert("Dein Rezept konnte nicht gelöscht werden.");
+    }
+
+    async function handleEditRecipe(): Promise<void> {
+        if (await fillInputFields() == true) {
+            setModalTitle("edit");
+            let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
+            modalBox.style.display = "block";
+            modalBox.scrollIntoView(true);
+            return;
+        }
+        window.alert("Dein Rezept kann nicht geändert werden.");
+    }
+
+    async function handleShowRecipe(): Promise<void> {
+        if (await fillTextFields() == true) {
+            setModalTitle("show");
+            await setButtonFavorite();
+            let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
+            modalBox.style.display = "block";
+            modalBox.scrollIntoView(true);
+            return;
+        }
+        window.alert("Da Rezept kann nicht angezeigt werden.");
+    }
+
+    async function handleDeleteFavorite(): Promise<void> {
+        let username: string = localStorage.getItem("Username");
+        let recipeID: string = localStorage.getItem("RecipeID");
+        if (recipeID != null && recipeID != "") {
+            let responseText: string = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
+            if (responseText != "") {
+                window.alert("Dein Favorit wurde erfolgreich geändert!");
+                listMyFavorites();
+                return;
+            }
+        }
+        window.alert("Dein Favorit konnte nicht geändert werden.");
+    }
+
+    async function handleShowFavorite(): Promise<void> {
+        if (await fillTextFields() == true) {
+            setModalTitle("showFavorite");
+            await setButtonFavorite();
+            let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
+            modalBox.style.display = "block";
+            modalBox.scrollIntoView(true);
+            return;
+        }
+        window.alert("Da Rezept kann nicht angezeigt werden.");
+    }
+
+    export async function handleToggleFavorite(): Promise<void> {
+        let username: string = localStorage.getItem("Username");
+        let recipeID: string = localStorage.getItem("RecipeID");
+        if (username != null && username != "" && recipeID != null && recipeID != "") {
+            let responseText: string = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
+            if (responseText != "") {
+                window.alert("Dein Favorit wurde erfolgreich geändert!");
+                await setButtonFavorite();
+                return;
+            }
+        }
+        window.alert("Dein Favorit konnte nicht geändert werden.");
+    }
+
+    async function handleReadUser(): Promise<User> {
+        let user: User = null;
+        let username: string = localStorage.getItem("Username");
+        if (username != null && username != "") {
+            let responseText: string = await getResponseText("?function=readUser&username=" + username);
+            if (responseText != "") {
+                user = JSON.parse(responseText);
+            }
+        }
+        return user;
+    }
+
+    async function handleReadAllRecipes(): Promise<Array<AllRecipes>> {
+        let allRecipes: Array<AllRecipes> = new Array<AllRecipes>();
+        let responseText: string = await getResponseText("?function=readAllRecipes");
         if (responseText != "") {
-            window.alert("Du hast dich für schmackofatz! registriert. Du kannst dich nun login.");
+            allRecipes = JSON.parse(responseText);
         }
-        if (responseText == "") {
-            window.alert("Du musst einen Benutzernamen und ein Passwort eingeben.");
-        }
-        else {
-            window.alert("Registration fehlgeschlagen. Dieser Benutzername ist leider schon vergeben.");
-        }
+        return allRecipes;
     }
 
     export function handleLogout(): void {
@@ -63,66 +222,6 @@ namespace Client {
         modalBox.scrollIntoView(true);
     }
 
-    export async function handleSave(): Promise<void> {
-        let modal: HTMLElement = <HTMLElement>document.getElementById("titleRecipe");
-        let mode: string = modal.className;
-        let recipeID: string = null;
-        if (mode == "edit") {
-            recipeID = localStorage.getItem("RecipeID");
-        } else {
-            recipeID = "";
-        }
-        if (recipeID != null) {
-            let responseText: string = await getResponseText("?function=save&mode=" + mode + "&" + "recipeID=" + recipeID + "&");
-            if (responseText != "") {
-                localStorage.setItem("User", responseText);
-                localStorage.removeItem("RecipeID");
-                let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
-                modalBox.style.display = "none";
-                window.alert("Dein Rezept wurde erfolgreich gespeichert!");
-                window.location.pathname = "meinerezepte.html";
-                return;
-            }
-        }
-        window.alert("Dein Rezept konnte nicht gespeichert werden.");
-    }
-
-    export function handleRecipe(_event: Event): void {
-        let image: HTMLImageElement = _event.target as HTMLImageElement;
-        if (image == null) {
-            return;
-        }
-        localStorage.setItem("RecipeID", image.className);
-        if (image.id == "edit") {
-            handleEdit();
-        } else if (image.id == "delete") {
-            handleDelete();
-        } else if (image.id == "show") {
-            handleShow();
-        } else if (image.id == "deleteFavorite") {
-            handleDeleteFavorite();
-        } else if (image.id == "showFavorite") {
-            handleShowFavorite();
-        }
-    }
-
-    export async function handleToggleFavorite(): Promise<void> {
-        let user: User = JSON.parse(localStorage.getItem("User"));
-        if (user != null) {
-            let recipeID: string = localStorage.getItem("RecipeID");
-            if (recipeID != null) {
-                let responseText: string = await getResponseText("?function=toggleFavorite&recipeID=" + recipeID + "&");
-                if (responseText != "") {
-                    localStorage.setItem("User", responseText);
-                    window.alert("Das Rezept wurde zu deinen Favoriten hinzugefügt!");
-                    setButtonFavorite();
-                    return;
-                }
-            }
-        }
-        window.alert("das Rezept konnte nicht zu deinen Favoriten hinzugefügt werden.");
-    }
-
     export function handleDropdown(): void {
         document.getElementById("dropdown").classList.toggle("show");
     }
@@ -130,7 +229,6 @@ namespace Client {
     export function handleClose(): void {
         // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-yes-and-no-options
         localStorage.removeItem("RecipeID");
-        readAllRecipes();
         let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
         modalBox.style.display = "none";
         switch (modalBox.className) {
@@ -148,42 +246,54 @@ namespace Client {
         }
     }
 
-    export async function readAllRecipes(): Promise<void> {
-        let responseText: string = await getResponseText("?function=readAllRecipes&");
-        if (responseText != "") {
-            localStorage.setItem("AllRecipes", responseText);
-        } else {
-            localStorage.removeItem("AllRecipes");
+    async function listMyRecipes(): Promise<void> {
+        let myRecipesList: HTMLElement = <HTMLElement>document.getElementById("myRecipesList");
+        let recipesText: string = "";
+        myRecipesList.innerHTML = recipesText;
+        let user: User = await handleReadUser();
+        if (user != null) {
+            for (let i: number = 0; i < user.recipes.length; i++) {
+                recipesText = recipesText +
+                    "<h2>" +
+                    user.recipes[i].recipename +
+                    getEditImage(String(user.recipes[i].recipeID)) +
+                    getDeleteImage(String(user.recipes[i].recipeID)) +
+                    "</h2>"; //generischer HTML Code
+            }
+            myRecipesList.innerHTML = recipesText;
+            return;
         }
+        window.location.pathname = "startseite.html";
+        window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde Dich an!");
     }
 
-    export function listMyFavorites(): void {
-        let favoritesStart: HTMLElement = document.getElementById("favorites");
-        let favoritesText: string = "";
-        favoritesStart.innerHTML = favoritesText;
-        let user: User = JSON.parse(localStorage.getItem("User"));
+    async function listMyFavorites(): Promise<void> {
+        let favoritesList: HTMLElement = document.getElementById("favoritesList");
+        let recipesText: string = "";
+        favoritesList.innerHTML = recipesText;
+        let user: User = await handleReadUser();
         if (user != null) {
-            let allRecipes: Array<AllRecipes> = JSON.parse(localStorage.getItem("AllRecipes"));
+            let allRecipes: Array<AllRecipes> = await handleReadAllRecipes();
             if (allRecipes != null && user.favorites != null && user.favorites.length > 0) {
                 for (let i: number = 0; i < user.favorites.length; i++) {
                     let index: number = allRecipes.findIndex(recipe => recipe.recipe.recipeID == user.favorites[i]);
-                    favoritesText = favoritesText + "<h2>♡ ";
                     if (index < 0) {
-                        favoritesText = favoritesText + "Dieses Rezept ist leider nicht mehr vorhanden.";
+                        recipesText = recipesText + "Dieses Rezept ist leider nicht mehr vorhanden.";
                     } else {
-                        favoritesText = favoritesText + allRecipes[index].recipe.recipename + " von " +
-                            allRecipes[index].author +
-                            "<img src='../Pictures/glasses.png' id='showFavorite' class='" + user.favorites[i] + "' alt='showFavorite'>";
-
+                        recipesText = recipesText +
+                            "<h2>" +
+                            "♡ " +
+                            allRecipes[index].recipe.recipename + " von " + allRecipes[index].author +
+                            getShowFavoriteImage(String(user.favorites[i]));
                     }
-                    favoritesText = favoritesText +
-                        "<img src='../Pictures/trash.png' id='deleteFavorite' class='" + user.favorites[i] + "' alt='deleteFavorite'>" +
+                    recipesText = recipesText +
+                        getDeleteFavoriteImage(String(user.favorites[i])) +
                         "</h2>"; //generischer HTML Code
                 }
             } else {
-                favoritesText = "<h2>Du hast noch keine Favoriten angelegt.</h2>";
+                recipesText = "<h2>Du hast noch keine Favoriten angelegt.</h2>";
             }
-            favoritesStart.innerHTML = favoritesText;
+            favoritesList.innerHTML = recipesText;
             return;
         }
         window.location.pathname = "startseite.html";
@@ -191,64 +301,55 @@ namespace Client {
     }
 
     async function listAllRecipes(): Promise<void> {
-        let allRecipes: Array<AllRecipes> = JSON.parse(localStorage.getItem("AllRecipes"));
-        let recipes: string = "";
+        let recipeWorldList: HTMLDivElement = <HTMLDivElement>document.getElementById("recipeWorldList");
+        let recipesText: string = "";
+        recipeWorldList.innerHTML = recipesText;
+        let allRecipes: Array<AllRecipes> = await handleReadAllRecipes();
         if (allRecipes != null) {
-            let user: User = JSON.parse(localStorage.getItem("User"));
+            let user: User = await handleReadUser();
             for (let i: number = 0; i < allRecipes.length; i++) {
-                let favoriteImage: string = "";
-                if (user != null) {
-                    let index: number = user.favorites.findIndex(objectID => objectID == allRecipes[i].recipe.recipeID);
-                    if (index >= 0) {
-                        favoriteImage = "♡ ";
-                    }
-                }
-                recipes = recipes +
-                    "<h2>" + favoriteImage +
+                recipesText = recipesText +
+                    "<h2>" +
+                    getFavoriteImage(String(allRecipes[i].recipe.recipeID), user) +
                     allRecipes[i].recipe.recipename + " von " + allRecipes[i].author +
-                    "<img src='../Pictures/glasses.png' id='show' class='" + allRecipes[i].recipe.recipeID + "' alt='show'>" +
+                    getShowImage(String(allRecipes[i].recipe.recipeID)) +
                     "</h2>"; //generischer HTML Code      
             }
         } else {
-            localStorage.removeItem("AllRecipes");
-            recipes = "<h1>Es sind noch keine Rezepte vorhanden.</h1>";
+            recipesText = "<h1>Es sind noch keine Rezepte vorhanden.</h1>";
         }
-        let recipeWorld: HTMLDivElement = <HTMLDivElement>document.getElementById("recipeWorld");
-        recipeWorld.innerHTML = recipes;
+        recipeWorldList.innerHTML = recipesText;
     }
 
-    function setModalBox() {
+    function setModalBox(): void {
         let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
         modalBox.style.display = "none";
     }
 
     function setButtonLogout(): void {
         let element: HTMLElement = document.getElementById("logoutButtonText");
-        let elementMobile: HTMLElement = document.getElementById("logoutButtonTextMobile");
-        let user: User = JSON.parse(localStorage.getItem("User"));
-        if (user == null) {
+        let username: string = localStorage.getItem("Username");
+        if (username == null || username == "") {
             element.innerText = "ANMELDEN";
-            elementMobile.innerText = "ANMELDEN";
         } else {
             element.innerText = "ABMELDEN";
-            elementMobile.innerText = "ABMELDEN";
         }
     }
 
-    function setButtonFavorite(): void {
+    async function setButtonFavorite(): Promise<void> {
         let element: HTMLElement = document.getElementById("favoriteButton");
         if (element == null) {
             return;
         }
         element.innerHTML = "";
-        let user: User = JSON.parse(localStorage.getItem("User"));
+        let user: User = await handleReadUser();
         if (user == null) {
             element.style.display = "none";
             return;
         }
         element.innerHTML = "Zu Favoriten hinzufügen";
         element.style.display = "block";
-        let allRecipes: Array<AllRecipes> = JSON.parse(localStorage.getItem("AllRecipes"));
+        let allRecipes: Array<AllRecipes> = await handleReadAllRecipes();
         if (allRecipes == null) {
             return;
         }
@@ -278,20 +379,12 @@ namespace Client {
     }
 
     function clearInputFields(): void {
-        let recipename: HTMLInputElement = <HTMLInputElement>document.getElementById("recipename");
-        recipename.value = "";
-        let ingredients: HTMLDivElement = <HTMLDivElement>document.getElementById("ingredients");
-        ingredients.innerHTML = "";
-        for (let i: number = 0; i < 10; i++) {
-            let ingredient: string = "";
-            ingredients.innerHTML = ingredients.innerHTML + "<input name='ingredient' value='" + ingredient + "'>";
-        }
-        let preparation: HTMLTextAreaElement = <HTMLTextAreaElement>document.getElementById("preparation");
-        preparation.value = "";
+        let recipe: Recipe = { recipeID: null, recipename: "", ingredients: new Array<string>(), preparation: "" };
+        fillFields(recipe, true);
     }
 
-    function fillInputFields(): boolean {
-        let user: User = JSON.parse(localStorage.getItem("User"));
+    async function fillInputFields(): Promise<boolean> {
+        let user: User = await handleReadUser();
         if (user == null) {
             return false;
         }
@@ -304,25 +397,12 @@ namespace Client {
         if (index < 0) {
             return false;
         }
-        let recipename: HTMLInputElement = <HTMLInputElement>document.getElementById("recipename");
-        recipename.value = user.recipes[index].recipename;
-        let ingredients: HTMLDivElement = <HTMLDivElement>document.getElementById("ingredients");
-        ingredients.innerHTML = "";
-        for (let i: number = 0; i < 10; i++) {
-            let ingredient: string = "";
-            if (i < user.recipes[index].ingredients.length) {
-                ingredient = user.recipes[index].ingredients[i];
-            }
-            ingredients.innerHTML = ingredients.innerHTML + "<input name='ingredient' value='" + ingredient + "'>";
-        }
-        let preparation: HTMLTextAreaElement = <HTMLTextAreaElement>document.getElementById("preparation");
-        preparation.value = user.recipes[index].preparation;
+        fillFields(user.recipes[index], false);
         return true;
     }
 
-    function fillTextFields(): boolean {
-        let responseText: string = localStorage.getItem("AllRecipes");
-        let allRecipes: Array<AllRecipes> = JSON.parse(responseText);
+    async function fillTextFields(): Promise<boolean> {
+        let allRecipes: Array<AllRecipes> = await handleReadAllRecipes();
         if (allRecipes == null) {
             return false;
         }
@@ -335,109 +415,58 @@ namespace Client {
         if (index < 0) {
             return false;
         }
+        fillFields(allRecipes[index].recipe, true);
+        return true;
+    }
+
+    function fillFields(_recipe: Recipe, _readOnly: boolean): void {
+        let readOnly: string = "";
+        if (_readOnly) {
+            readOnly = " readonly='true'";
+        }
         let recipename: HTMLInputElement = <HTMLInputElement>document.getElementById("recipename");
-        recipename.value = allRecipes[index].recipe.recipename;
+        recipename.value = _recipe.recipename;
         let ingredients: HTMLDivElement = <HTMLDivElement>document.getElementById("ingredients");
         ingredients.innerHTML = "";
         for (let i: number = 0; i < 10; i++) {
             let ingredient: string = "";
-            if (i < allRecipes[index].recipe.ingredients.length) {
-                ingredient = allRecipes[index].recipe.ingredients[i];
+            if (i < _recipe.ingredients.length) {
+                ingredient = _recipe.ingredients[i];
             }
-            ingredients.innerHTML = ingredients.innerHTML + "<input name='ingredient' value='" + ingredient + "' readonly='true'>";
+            ingredients.innerHTML = ingredients.innerHTML + "<input name='ingredient' value='" + ingredient + "'" + readOnly + ">";
         }
         let preparation: HTMLTextAreaElement = <HTMLTextAreaElement>document.getElementById("preparation");
-        preparation.value = allRecipes[index].recipe.preparation;
-        return true;
+        preparation.value = _recipe.preparation;
     }
 
-    async function getResponseText(_urlParam: string): Promise<string> {
-        let formData: FormData = new FormData(document.forms[0]);
-        let url: string = "http://localhost:8100"; //http://localhost:8100 https://gistestalisa.herokuapp.com/
-        let query: URLSearchParams = new URLSearchParams(<any>formData);
-        url = url + _urlParam + query.toString();
-        let response: Response = await fetch(url, { method: "get" });
-        return await response.text();
-    }
-
-    async function listMyRecipes(): Promise<void> {
-        let user: User = JSON.parse(localStorage.getItem("User"));
-        if (user != null) {
-            let element: HTMLElement = <HTMLElement>document.getElementById("recipes");
-            element.innerHTML = "";
-            for (let i: number = 0; i < user.recipes.length; i++) {
-                element.innerHTML = element.innerHTML + "<h2>" +
-                    (i + 1) + ". " + user.recipes[i].recipename +
-                    "<img src='../Pictures/edit.png' id='edit' class='" + user.recipes[i].recipeID + "' alt='edit'>" +
-                    "<img src='../Pictures/trash.png' id='delete' class='" + user.recipes[i].recipeID + "' alt='delete'>" + "</h2>"; //generischer HTML Code
-            }
-            return;
-        }
-        window.location.pathname = "startseite.html";
-        window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde Dich an!");
-    }
-
-    async function handleEdit(): Promise<void> {
-        if (fillInputFields() == true) {
-            setModalTitle("edit");
-            let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
-            modalBox.style.display = "block";
-            modalBox.scrollIntoView(true);
-            return;
-        }
-        window.alert("Dein Rezept kann nicht geändert werden.");
-    }
-
-    async function handleDelete(): Promise<void> {
-        let recipeID: string = localStorage.getItem("RecipeID");
-        if (recipeID != null && recipeID != "") {
-            let responseText: string = await getResponseText("?function=delete&recipeID=" + recipeID + "&");
-            if (responseText != "") {
-                localStorage.setItem("User", responseText);
-                localStorage.removeItem("RecipeID");
-                window.alert("Dein Rezept wurde erfolgreich gelöscht!");
-                window.location.pathname = "meinerezepte.html";
-                return;
+    function getFavoriteImage(_recipeID: string, _user: User): string {
+        let favoriteImage: string = "";
+        if (_user != null) {
+            let index: number = _user.favorites.findIndex(objectID => String(objectID) == _recipeID);
+            if (index >= 0) {
+                favoriteImage = "♡ ";
             }
         }
-        window.alert("Dein Rezept konnte nicht gelöscht werden.");
+        return favoriteImage;
     }
 
-    async function handleShow(): Promise<void> {
-        if (fillTextFields() == true) {
-            setModalTitle("show");
-            setButtonFavorite();
-            let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
-            modalBox.style.display = "block";
-            modalBox.scrollIntoView(true);
-            return;
-        }
-        window.alert("Das Rezept kann nicht angezeigt werden.");
+    function getEditImage(_recipeID: string): string {
+        return "<img src='Pictures/edit.png' id='edit' class='" + _recipeID + "' alt='edit'>";
     }
 
-    async function handleDeleteFavorite(): Promise<void> {
-        let recipeID: string = localStorage.getItem("RecipeID");
-        if (recipeID != null && recipeID != "") {
-            let responseText: string = await getResponseText("?function=toggleFavorite&recipeID=" + recipeID + "&");
-            if (responseText != "") {
-                localStorage.setItem("User", responseText);
-                window.alert("Dein Favorit wurde erfolgreich gelöscht!");
-                listMyFavorites();
-                return;
-            }
-        }
-        window.alert("Dein Favorit konnte nicht gelöscht werden.");
+    function getShowImage(_recipeID: string): string {
+        return "<img src='Pictures/glasses.png' id='show' class='" + _recipeID + "' alt='show'>";
     }
 
-    async function handleShowFavorite(): Promise<void> {
-        if (fillTextFields() == true) {
-            setModalTitle("showFavorite");
-            setButtonFavorite();
-            let modalBox: HTMLElement = <HTMLElement>document.getElementById("modalBox");
-            modalBox.style.display = "block";
-            modalBox.scrollIntoView(true);
-            return;
-        }
-        window.alert("Da Rezept kann nicht angezeigt werden.");
+    function getDeleteImage(_recipeID: string): string {
+        return "<img src='Pictures/trash.png' id='delete' class='" + _recipeID + "' alt='delete'>";
+    }
+
+    function getShowFavoriteImage(_recipeID: string): string {
+        return "<img src='Pictures/glasses.png' id='showFavorite' class='" + _recipeID + "' alt='show'>";
+    }
+
+    function getDeleteFavoriteImage(_recipeID: string): string {
+        return "<img src='Pictures/trash.png' id='deleteFavorite' class='" + _recipeID + "' alt='delete'>";
     }
 }

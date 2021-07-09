@@ -5,9 +5,9 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="https://use.typekit.net/ktw2qqw.css">
-    <script src="../client.js" defer></script>
+    <script src="client.js" defer></script>
     <title>Meine Rezepte | schmackofatz!</title>
 </head>
 
@@ -15,18 +15,18 @@
     <header>
         <div class="navigationDesktop">
             <div class="menu">
-                <a href="http://127.0.0.1:5500/startseite.html"><img src="../Pictures/schmackofatz.png"
+                <a href="http://127.0.0.1:5500/startseite.html"><img src="Pictures/schmackofatz.png"
                         alt="schmackofatz! Logo" id="logo" /></a>
-                        <a href="http://127.0.0.1:5500/startseite.html">Startseite</a>
-                        <a href="http://127.0.0.1:5500/favoriten.html">♡ Favoriten</a>
-                        <a href="http://127.0.0.1:5500/meinerezepte.html">Meine Rezepte</a>
+                <a href="http://127.0.0.1:5500/startseite.html">Startseite</a>
+                <a href="http://127.0.0.1:5500/favoriten.html">♡ Favoriten</a>
+                <a href="http://127.0.0.1:5500/meinerezepte.html">Meine Rezepte</a>
                 <div class="logoutButton" id="logoutButton" onclick="Client.handleLogout()">
                     <p id="logoutButtonText"></p>
                 </div>
             </div>
         </div>
         <div class="navigationMobile">
-            <img src="../Pictures/schmackofatz.png" alt="schmackofatz Logo">
+            <img src="Pictures/schmackofatz.png" alt="schmackofatz Logo">
             <div class="logoutButton" id="logoutButton" onclick="Client.handleLogout()">
                 <p id="logoutButtonTextMobile"></p>
             </div>
@@ -43,25 +43,25 @@
             <h1>Meine Rezepte</h1>
             <p>Füge deine eigenen Rezepte über den + Button hinzu.</p>
         </div>
-        <img src="../Pictures/plus_button.png" alt="Plus Button" id="plusButton" onclick="Client.handleAdd()">
+        <img src="Pictures/plus_button.png" alt="Plus Button" id="plusButton" onclick="Client.handleAdd()">
         <form method="post" id="formularModalBox">
             <div id="modalBox" class="modalBoxMyRecipes">
                 <div class="modalText">
                     <span id="close" onclick="Client.handleClose()">&times;</span>
                     <h2 id="titleRecipe"></h2>
                     <p>Rezeptname:</p>
-                    <input type="text" name="recipename" id="recipename" required>
+                    <input type="text" name="recipename" id="recipename" required="true">
                     <p>Zutaten:</p>
                     <div id="ingredients" class="list">
                     </div>
                     <p>Zubereitung:</p>
                     <textarea id="preparation" name="preparation"></textarea>
                     <br>
-                    <button type="button" id="saveButton" onclick="Client.handleSave()">Speichern</button>
+                    <button type="button" id="saveButton" onclick="Client.handleSaveRecipe()">Speichern</button>
                 </div>
             </div>
         </form>
-        <div id=recipes onclick="Client.handleRecipe(event)"></div>
+        <div id="myRecipesList" onclick="Client.handleRecipe(event)"></div>
     </main>
 </body>
 

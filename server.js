@@ -7,10 +7,7 @@ const Mongo = require("mongodb");
 var Server;
 (function (Server) {
     let connectionString = "mongodb+srv://Admin:Test@cluster0.oazcj.mongodb.net/schmackofatz?retryWrites=true&w=majority";
-    // let connectionString: string = "mongodb://localhost:27017/?readPreference=primary&appname=MongoDB%20Compass&ssl=false";
     let collection;
-    let user;
-    let allRecipes;
     startServer();
     connectDB();
     async function startServer() {
@@ -38,32 +35,39 @@ var Server;
         switch (qdata.function) {
             case "registration":
                 if (await checkRegistration(qdata.username, qdata.password)) {
-                    response = JSON.stringify(user);
+                    response = JSON.stringify(qdata.username);
                 }
                 break;
             case "login":
                 if (await checkLogin(qdata.username, qdata.password)) {
-                    response = JSON.stringify(user);
+                    response = JSON.stringify(qdata.username);
                 }
                 break;
-            case "save":
-                if (await checkSave(qdata.mode, qdata.recipeID, qdata.recipename, qdata.ingredient, qdata.preparation)) {
-                    response = JSON.stringify(user);
+            case "saveRecipe":
+                if (await checkSaveRecipe(_request, qdata.mode, qdata.username, qdata.recipeID, qdata.recipename, qdata.ingredient, qdata.preparation)) {
+                    response = JSON.stringify(qdata.username);
                 }
                 break;
-            case "delete":
-                if (await checkDelete(qdata.recipeID)) {
+            case "deleteRecipe":
+                if (await checkDeleteRecipe(qdata.username, qdata.recipeID)) {
+                    response = JSON.stringify(qdata.username);
+                }
+                break;
+            case "toggleFavorite":
+                if (await checkFavorite(qdata.username, qdata.recipeID)) {
+                    response = JSON.stringify(qdata.username);
+                }
+                break;
+            case "readUser":
+                let user = await collection.findOne({ _id: qdata.username });
+                if (user != null) {
                     response = JSON.stringify(user);
                 }
                 break;
             case "readAllRecipes":
-                if (await checkReadAllRecipes()) {
+                let allRecipes = await readAllRecipes();
+                if (allRecipes != null && allRecipes.length != 0) {
                     response = JSON.stringify(allRecipes);
-                }
-                break;
-            case "toggleFavorite":
-                if (await checkFavorite(qdata.recipeID)) {
-                    response = JSON.stringify(user);
                 }
                 break;
             default:
@@ -77,7 +81,7 @@ var Server;
         if (_username == null || _username == "" || _password == null || _password == "") {
             return false;
         }
-        user = await collection.findOne({ _id: _username });
+        let user = await collection.findOne({ _id: _username });
         if (user != null) {
             return false;
         }
@@ -86,13 +90,14 @@ var Server;
         return true;
     }
     async function checkLogin(_username, _password) {
-        user = await collection.findOne({ _id: _username });
+        let user = await collection.findOne({ _id: _username });
         if (user == null || user.password != _password) {
             return false;
         }
         return true;
     }
-    async function checkSave(_mode, _recipeID, _recipename, _ingredients, _preparation) {
+    async function checkSaveRecipe(_request, _mode, _username, _recipeID, _recipename, _ingredients, _preparation) {
+        let user = await collection.findOne({ _id: _username });
         if (user == null) {
             return false;
         }
@@ -119,7 +124,8 @@ var Server;
         collection.updateOne({ _id: user._id }, { $set: { recipes: user.recipes } });
         return true;
     }
-    async function checkDelete(_recipeID) {
+    async function checkDeleteRecipe(_username, _recipeID) {
+        let user = await collection.findOne({ _id: _username });
         if (user == null) {
             return false;
         }
@@ -131,29 +137,12 @@ var Server;
         collection.updateOne({ _id: user._id }, { $set: { recipes: user.recipes } });
         return true;
     }
-    async function checkReadAllRecipes() {
-        allRecipes = new Array();
-        // https://dba.stackexchange.com/questions/188441/how-to-views-all-documents-in-a-particular-collection-of-database-in-mongodb-thr
-        await collection.find({}).forEach(user => {
-            for (let i = 0; i < user.recipes.length; i++) {
-                let recipe = { author: user.recipes[i].recipeID, recipe: user.recipes[i] };
-                recipe.author = user._id;
-                recipe.recipe = user.recipes[i];
-                allRecipes.push(recipe);
-            }
-        });
-        if (allRecipes.length == 0) {
-            return false;
-        }
-        return true;
-    }
-    async function checkFavorite(_recipeID) {
+    async function checkFavorite(_username, _recipeID) {
+        let user = await collection.findOne({ _id: _username });
         if (user == null) {
             return false;
         }
-        if (allRecipes == null) {
-            return false;
-        }
+        let allRecipes = await readAllRecipes();
         let index = user.favorites.findIndex(objectID => String(objectID) == _recipeID);
         if (index < 0) {
             let index = allRecipes.findIndex(objectID => String(objectID.recipe.recipeID) == _recipeID);
@@ -165,6 +154,18 @@ var Server;
         }
         collection.updateOne({ _id: user._id }, { $set: { favorites: user.favorites } });
         return true;
+    }
+    async function readAllRecipes() {
+        let allRecipes = new Array();
+        await collection.find({}).forEach(user => {
+            for (let i = 0; i < user.recipes.length; i++) {
+                let recipe = { author: user.recipes[i].recipeID, recipe: user.recipes[i] };
+                recipe.author = user._id;
+                recipe.recipe = user.recipes[i];
+                allRecipes.push(recipe);
+            }
+        });
+        return allRecipes;
     }
     function getRecipeByID(_recipes, _recipeID) {
         // https://stackoverflow.com/questions/58971067/how-do-i-get-the-index-of-object-in-array-using-angular

@@ -7,23 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="login.css">
     <link rel="stylesheet" href="https://use.typekit.net/ktw2qqw.css">
-    <script src="../client.js" defer></script>
+    <script src="client.js" defer></script>
     <title>Login | schmackofatz!</title>
 </head>
 
 <body onload="Client.handleInitLogin()">
     <main>
         <div class="login">
-            <a href="http://127.0.0.1:5500/startseite.html"><img src="../Pictures/schmackofatz.png" alt="schmackofatz Logo" id="logo"></a>
+            <a href="http://127.0.0.1:5500/startseite.html"><img src="Pictures/schmackofatz.png" alt="schmackofatz Logo" id="logo"></a>
             <h1>Login</h1>
             <form method="post" id="formular">
                 <div class="textfield">
-                    <input type="text" name="username" required>
+                    <input type="text" id="username" name="username" required />
                     <span></span>
                     <label>Benutzername</label>
                 </div>
                 <div class="textfield">
-                    <input type="password" name="password" autocomplete="on" required>
+                    <input type="password" id="password" name="password" autocomplete="on" required />
                     <span></span>
                     <label>Passwort</label>
                 </div>
