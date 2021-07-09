@@ -77,7 +77,7 @@ var Client;
             localStorage.setItem("Username", username);
             localStorage.removeItem("RecipeID");
             window.alert("Du hast dich erfolgreich eingeloggt.");
-            window.location.pathname = "startseite.html";
+            window.location.pathname = "../startseite.html";
         }
         else {
             window.alert("Die Anmeldung ist fehlgeschlagen. Gebe deinen Benutzernamen und dein Passwort richtig ein oder registriere dich.");
@@ -109,7 +109,7 @@ var Client;
                 let modalBox = document.getElementById("modalBox");
                 modalBox.style.display = "none";
                 window.alert("Dein Rezept wurde erfolgreich gespeichert!");
-                window.location.pathname = "meinerezepte.html";
+                window.location.pathname = "../meinerezepte.html";
                 return;
             }
         }
@@ -124,7 +124,7 @@ var Client;
             if (responseText != "") {
                 localStorage.removeItem("RecipeID");
                 window.alert("Dein Rezept wurde erfolgreich gelöscht!");
-                window.location.pathname = "meinerezepte.html";
+                window.location.pathname = "../meinerezepte.html";
                 return;
             }
         }
@@ -210,7 +210,7 @@ var Client;
     }
     function handleLogout() {
         localStorage.clear();
-        window.location.pathname = "Login.html";
+        window.location.pathname = "../Login.html";
     }
     Client.handleLogout = handleLogout;
     //https://www.w3schools.com/howto/howto_css_modals.asp
@@ -233,13 +233,13 @@ var Client;
         modalBox.style.display = "none";
         switch (modalBox.className) {
             case "modalBoxStart":
-                window.location.pathname = "startseite.html";
+                window.location.pathname = "../startseite.html";
                 break;
             case "modalBoxMyRecipes":
-                window.location.pathname = "meinerezepte.html";
+                window.location.pathname = "../meinerezepte.html";
                 break;
             case "modalBoxFavorites":
-                window.location.pathname = "favoriten.html";
+                window.location.pathname = "../favoriten.html";
                 break;
             default:
                 break;
@@ -263,7 +263,7 @@ var Client;
             myRecipesList.innerHTML = recipesText;
             return;
         }
-        window.location.pathname = "startseite.html";
+        window.location.pathname = "../startseite.html";
         window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde Dich an!");
     }
     async function listMyFavorites() {
@@ -297,7 +297,7 @@ var Client;
             favoritesList.innerHTML = recipesText;
             return;
         }
-        window.location.pathname = "startseite.html";
+        window.location.pathname = "../startseite.html";
         window.alert("Deine Favoriten können nicht gelesen werden. Bitte melde Dich an!");
     }
     async function listAllRecipes() {
