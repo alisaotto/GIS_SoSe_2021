@@ -300,7 +300,7 @@ namespace Client {
         window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde dich an!");
     }
 
-    // Alle Favoriten des angemeldeten Benutzers aus der Datenbank lesen und und auf der Favoriten-Seite anzeigen
+    // Alle Favoriten des angemeldeten Benutzers aus der Datenbank lesen und auf der Favoriten-Seite anzeigen
     async function listMyFavorites(): Promise<void> {
         let favoritesList: HTMLElement = document.getElementById("favoritesList");
         let recipesText: string = "";
