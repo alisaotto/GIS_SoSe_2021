@@ -16,7 +16,7 @@ declare global { // https://stackoverflow.com/questions/42025767/how-to-declare-
   }
 
   interface User {
-    _id: string;
+    _id: string; // Benutzername
     password: string;
     recipes: Array<Recipe>;
     favorites: Array<Mongo.ObjectID>;
@@ -30,6 +30,7 @@ export namespace Server {
   startServer();
   connectDB();
 
+  // Server starten
   async function startServer(): Promise<void> {
     console.log("Starting server");
     let port: number = Number(process.env.PORT);
@@ -41,6 +42,7 @@ export namespace Server {
     server.listen(port);
   }
 
+  // Datenbank verbinden
   async function connectDB(): Promise<void> {
     console.log("Starting DB");
     let options: Mongo.MongoClientOptions = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -49,6 +51,14 @@ export namespace Server {
     collection = mongoClient.db("schmackofatz").collection("User");
   }
 
+  // Serveranforderungen behandeln:
+  //    "registration"    Benutzer registrieren
+  //    "login"           Benutzer einloggen
+  //    "saveRecipe"      Rezept speichern
+  //    "deleteRecipe"    Rezept löschen
+  //    "toggleFavorite"  Favorit hinzufügen/entfernen
+  //    "readUser"        Benutzer lesen
+  //    "readAllRecipes"  Alle Rezepte lesen
   export async function handleRequest(_request: Http.IncomingMessage, _response: Http.ServerResponse): Promise<void> {
     _response.setHeader("content-type", "text/html; charset=utf-8");
     _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -103,6 +113,9 @@ export namespace Server {
     _response.end();
   }
 
+  // Neuen Benutzer auf der Datenbank speichern
+  // Rückgabe false, wenn der Benutzer oder das Passwort leer ist oder schon schon auf der Datenbank existiert
+  // Rückgabe true, wenn der Benutzer erfolgreich auf der Datenbank gespeichert wurde
   async function checkRegistration(_username: string, _password: string): Promise<Boolean> {
     if (_username == null || _username == "" || _password == null || _password == "") {
       return false;
@@ -116,6 +129,9 @@ export namespace Server {
     return true;
   }
 
+  // Benutzer einloggen
+  // Rückgabe false, wenn der Benutzer oder das Passwort nicht auf der Datenbank existiert
+  // Rückgabe true, wenn der Benutzer erfolgreich auf der Datenbank gelesen wurde
   async function checkLogin(_username: string, _password: string): Promise<Boolean> {
     let user: User = await collection.findOne({ _id: _username });
     if (user == null || user.password != _password) {
@@ -124,6 +140,9 @@ export namespace Server {
     return true;
   }
 
+  // Rezept des Benutzers speichern oder ändern
+  // Rückgabe false, wenn der Benutzer oder das Rezept beim Ändern auf der Datenbank nicht existiert
+  // Rückgabe true, wenn das Rezept erfolgreich auf der Datenbank gespeichert wurde
   async function checkSaveRecipe(_request: Http.IncomingMessage, _mode: string, _username: string, _recipeID: string, _recipename: string, _ingredients: Array<string>, _preparation: string): Promise<Boolean> {
     let user: User = await collection.findOne({ _id: _username });
     if (user == null) {
@@ -153,6 +172,9 @@ export namespace Server {
     return true;
   }
 
+  // Rezept des Benutzers löschen
+  // Rückgabe false, wenn der Benutzer oder das Rezept auf der Datenbank nicht existiert
+  // Rückgabe true, wenn das Rezept erfolgreich aus der Datenbank gelöscht wurde
   async function checkDeleteRecipe(_username: string, _recipeID: string): Promise<Boolean> {
     let user: User = await collection.findOne({ _id: _username });
     if (user == null) {
@@ -167,6 +189,9 @@ export namespace Server {
     return true;
   }
 
+  // Favorit des Benutzers hinzufügen oder entfernen
+  // Rückgabe false, wenn der Benutzer oder der Favorit auf der Datenbank nicht existiert
+  // Rückgabe true, wenn dar Favorit erfolgreich auf der Datenbank gespeichert wurde
   async function checkFavorite(_username: string, _recipeID: string): Promise<Boolean> {
     let user: User = await collection.findOne({ _id: _username });
     if (user == null) {
@@ -176,6 +201,9 @@ export namespace Server {
     let index: number = user.favorites.findIndex(objectID => String(objectID) == _recipeID);
     if (index < 0) {
       let index: number = allRecipes.findIndex(objectID => String(objectID.recipe.recipeID) == _recipeID);
+      if (index < 0) {
+        return false;
+      }
       let newFavorite: Mongo.ObjectID = allRecipes[index].recipe.recipeID;
       user.favorites.push(newFavorite);
     } else {
@@ -185,6 +213,7 @@ export namespace Server {
     return true;
   }
 
+  // Alle Rezepte aus der Datenbank lesen
   async function readAllRecipes(): Promise<Array<AllRecipes>> {
     let allRecipes: Array<AllRecipes> = new Array<AllRecipes>();
     await collection.find({}).forEach(user => {
@@ -198,6 +227,10 @@ export namespace Server {
     return allRecipes;
   }
 
+  // Index des Rezepts über die Rezept ID ermitteln
+  // Parameter:
+  //    _recipes:  Array mit Rezepten
+  //    _recipeID: Die Rezept ID, die gesucht werden soll
   function getRecipeByID(_recipes: Array<Recipe>, _recipeID: string): number {
     // https://stackoverflow.com/questions/58971067/how-do-i-get-the-index-of-object-in-array-using-angular
     return _recipes.findIndex(recipe => String(recipe.recipeID) == _recipeID);

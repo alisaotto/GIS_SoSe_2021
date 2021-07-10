@@ -1,6 +1,10 @@
 "use strict";
+// loaclstorage enthält:
+//      "Username" Name des aktuell engemeldeten Benutzers.
+//      "RecipeID" ID des ausgewählten Rezepts
 var Client;
 (function (Client) {
+    // Alle Init-Funktionen führen beim Öffnen die jeweiligen Funktionen aus
     function handleInitStartPage() {
         setModalBox();
         setButtonLogout();
@@ -23,6 +27,7 @@ var Client;
         listMyFavorites();
     }
     Client.handleInitFavorites = handleInitFavorites;
+    // Response-Text für Server-Aufruf vorbereiten
     async function getResponseText(_urlParam) {
         let formData = new FormData(document.forms[0]);
         let url = "https://gis21.herokuapp.com"; //http://localhost:8100
@@ -31,29 +36,31 @@ var Client;
         let response = await fetch(url, { method: "get" });
         return await response.text();
     }
+    // Bei einem Klick auf bestimmte Icons/Buttons (Brille, Mülleimer, Bearbeiten-Stift, Favoriten-Button) werden die jeweiligen Funktionen aufgerufen und ausgeführt
     function handleRecipe(_event) {
         let image = _event.target;
         if (image == null) {
             return;
         }
         localStorage.setItem("RecipeID", image.className);
-        if (image.id == "delete") {
+        if (image.id == "delete") { // auf Meine Rezepte
             handleDeleteRecipe();
         }
-        else if (image.id == "edit") {
+        else if (image.id == "edit") { // auf Meine Rezepte
             handleEditRecipe();
         }
-        else if (image.id == "show") {
+        else if (image.id == "show") { // auf Startseite
             handleShowRecipe();
         }
-        else if (image.id == "deleteFavorite") {
+        else if (image.id == "deleteFavorite") { // auf Favoriten
             handleDeleteFavorite();
         }
-        else if (image.id == "showFavorite") {
+        else if (image.id == "showFavorite") { // auf Favoriten
             handleShowFavorite();
         }
     }
     Client.handleRecipe = handleRecipe;
+    // Registration (Benutzername & Passwort) mit dem Server auf der Datenbank überprüfen
     async function handleRegistration() {
         let username = document.getElementById("username");
         let password = document.getElementById("password");
@@ -70,6 +77,7 @@ var Client;
         }
     }
     Client.handleRegistration = handleRegistration;
+    // Login (Benutzername & Passwort) mit dem Server auf der Datenbank überprüfen
     async function handleLogin() {
         let responseText = await getResponseText("?function=login");
         if (responseText != "") {
@@ -84,6 +92,7 @@ var Client;
         }
     }
     Client.handleLogin = handleLogin;
+    // Rezeptnamen prüfen und Rezept über den Server auf der Datenbank speichern
     async function handleSaveRecipe() {
         let recipename = document.getElementById("recipename");
         if (recipename.value == null || recipename.value == "") {
@@ -116,6 +125,7 @@ var Client;
         window.alert("Dein Rezept konnte nicht gespeichert werden.");
     }
     Client.handleSaveRecipe = handleSaveRecipe;
+    // Ausgewähltes Rezept (über RecipeID) aus der Datenbank entfernen
     async function handleDeleteRecipe() {
         let username = localStorage.getItem("Username");
         let recipeID = localStorage.getItem("RecipeID");
@@ -130,6 +140,7 @@ var Client;
         }
         window.alert("Dein Rezept konnte nicht gelöscht werden.");
     }
+    // Eingabefelder aus Datenbank füllen und Modal Box zum Bearbeiten des Rezepts einblenden
     async function handleEditRecipe() {
         if (await fillInputFields() == true) {
             setModalTitle("edit");
@@ -140,6 +151,7 @@ var Client;
         }
         window.alert("Dein Rezept kann nicht geändert werden.");
     }
+    // Ausgabefelder aus Datenbank füllen und Modal Box zum Anzeigen des Rezepts einblenden
     async function handleShowRecipe() {
         if (await fillTextFields() == true) {
             setModalTitle("show");
@@ -151,6 +163,7 @@ var Client;
         }
         window.alert("Das Rezept kann nicht angezeigt werden.");
     }
+    // Ausgewählter Favorit (über RecipeID) aus der Datenbank entfernen
     async function handleDeleteFavorite() {
         let username = localStorage.getItem("Username");
         let recipeID = localStorage.getItem("RecipeID");
@@ -164,6 +177,7 @@ var Client;
         }
         window.alert("Dein Favorit konnte nicht gelöscht werden.");
     }
+    // Ausgabefelder aus Datenbank (über RecipeID) füllen und Modal Box zum Anzeigen des Rezepts einblenden
     async function handleShowFavorite() {
         if (await fillTextFields() == true) {
             setModalTitle("showFavorite");
@@ -175,13 +189,15 @@ var Client;
         }
         window.alert("Das Rezept kann nicht angezeigt werden.");
     }
+    // Favorit auf der Datenbank speichern (Klassenname des Buttons ist leer) 
+    // oder aus der Datenbank entfernen (Klassenname des Buttons ist nicht leer
     async function handleToggleFavorite() {
         let username = localStorage.getItem("Username");
         let recipeID = localStorage.getItem("RecipeID");
+        let favoriteButton = document.getElementById("favoriteButton");
         if (username != null && username != "" && recipeID != null && recipeID != "") {
             let responseText = await getResponseText("?function=toggleFavorite&username=" + username + "&recipeID=" + recipeID);
             if (responseText != "") {
-                let favoriteButton = document.getElementById("favoriteButton");
                 if (favoriteButton.className == "") {
                     window.alert("Das Rezept wurde erfolgreich zu deinen Favoriten hinzugefügt!");
                 }
@@ -192,9 +208,15 @@ var Client;
                 return;
             }
         }
-        window.alert("Das Rezept konnte nicht zu deinen Favoriten hinzugefügt werden.");
+        if (favoriteButton.className == "") {
+            window.alert("Das Rezept konnte nicht zu deinen Favoriten hinzugefügt werden.");
+        }
+        else {
+            window.alert("Das Rezept konnte nicht aus deinen Favoriten gelöscht werden.");
+        }
     }
     Client.handleToggleFavorite = handleToggleFavorite;
+    // Benutzer aus der DDatenbank lesen (Benutzername steht in localstorage)
     async function handleReadUser() {
         let user = null;
         let username = localStorage.getItem("Username");
@@ -206,6 +228,7 @@ var Client;
         }
         return user;
     }
+    // Alle Rezepte aus der Datenbank lesen
     async function handleReadAllRecipes() {
         let allRecipes = new Array();
         let responseText = await getResponseText("?function=readAllRecipes");
@@ -214,11 +237,13 @@ var Client;
         }
         return allRecipes;
     }
+    // localstorage beim Abmelden löschen und auf die Loginseite wechseln
     function handleLogout() {
         localStorage.clear();
         window.location.pathname = "GIS_SoSe_2021/login.html";
     }
     Client.handleLogout = handleLogout;
+    // Eingabefelder löschen und Modal Box zum Bearbeiten des Rezepts einblenden
     //https://www.w3schools.com/howto/howto_css_modals.asp
     function handleAdd() {
         setModalTitle("add");
@@ -232,6 +257,8 @@ var Client;
         document.getElementById("dropdown").classList.toggle("show");
     }
     Client.handleDropdown = handleDropdown;
+    // Modal Box ausblenden und über Klassenname der Modal Box zur jeweiligen Seite zurückkehren
+    // Dadurch wird die Anzeige aktualisiert, fall das Rezept oder der Favorit geändert wurde
     function handleClose() {
         // https://stackoverflow.com/questions/9334636/how-to-create-a-dialog-with-yes-and-no-options
         localStorage.removeItem("RecipeID");
@@ -252,6 +279,7 @@ var Client;
         }
     }
     Client.handleClose = handleClose;
+    // Alle Rezepte des angemeldeten Benutzers aus der Datenbank lesen und auf Meine Rezepte anzeigen
     async function listMyRecipes() {
         let myRecipesList = document.getElementById("myRecipesList");
         let recipesText = "";
@@ -272,6 +300,7 @@ var Client;
         window.location.pathname = "GIS_SoSe_2021/startseite.html";
         window.alert("Deine Rezepte können nicht gelesen werden. Bitte melde dich an!");
     }
+    // Alle Favoriten des angemeldeten Benutzers aus der Datenbank lesen und und auf der Favoriten-Seite anzeigen
     async function listMyFavorites() {
         let favoritesList = document.getElementById("favoritesList");
         let recipesText = "";
@@ -306,6 +335,7 @@ var Client;
         window.location.pathname = "GIS_SoSe_2021/startseite.html";
         window.alert("Deine Favoriten können nicht gelesen werden. Bitte melde dich an!");
     }
+    // Alle Rezepte aus der Datenbank lesen und auf der Startseite anzeigen
     async function listAllRecipes() {
         let recipeWorldList = document.getElementById("recipeWorldList");
         let recipesText = "";
@@ -327,10 +357,12 @@ var Client;
         }
         recipeWorldList.innerHTML = recipesText;
     }
+    // Modal Box ausblenden
     function setModalBox() {
         let modalBox = document.getElementById("modalBox");
         modalBox.style.display = "none";
     }
+    // Buttontext über den Benutzernamen aus localstorage zum anmelden oder abmelden ermitteln
     function setButtonLogout() {
         let elementDesktop = document.getElementById("logoutButtonText");
         let elementMobile = document.getElementById("logoutButtonTextMobile");
@@ -344,6 +376,9 @@ var Client;
             elementMobile.innerText = "ABMELDEN";
         }
     }
+    // Buttontext des ausgewählten Rezepts (über RecipeID) und aller Rezepte aus der Datenbank zum Hinzufügen oder Entfernen ermitteln
+    // Klassenname zum Kennzeichnen "ist Favorit" = "X" ist kein Favorit "" setzen
+    // Butten wird ausgeblendet, wenn der Benutzer nicht angemeldet ist!
     async function setButtonFavorite() {
         let element = document.getElementById("favoriteButton");
         if (element == null) {
@@ -373,6 +408,7 @@ var Client;
         element.innerHTML = "Aus Favoriten entfernen";
         element.className = "X";
     }
+    // Titel und Klasse der Modal Box über Parameter _mode ermitteln
     function setModalTitle(_mode) {
         let modal = document.getElementById("titleRecipe");
         modal.className = _mode;
@@ -389,10 +425,12 @@ var Client;
             modal.innerText = "Favorit anzeigen";
         }
     }
+    // Eingabefelder der Modal Box beim Anlegen eines Rezepts löschen
     function clearInputFields() {
         let recipe = { recipeID: null, recipename: "", ingredients: new Array(), preparation: "" };
         fillFields(recipe, false);
     }
+    // Eingabefelder der Modal Box beim Ändern eines ausgewählten Rezepts (über RecipeID) aus Datenbank füllen
     async function fillInputFields() {
         let user = await handleReadUser();
         if (user == null) {
@@ -410,6 +448,7 @@ var Client;
         fillFields(user.recipes[index], false);
         return true;
     }
+    // Ausgabefelder der Modal Box beim Anzeigen eines ausgewählten Rezepts (über RecipeID) aus Datanbank füllen
     async function fillTextFields() {
         let allRecipes = await handleReadAllRecipes();
         if (allRecipes == null) {
@@ -424,13 +463,15 @@ var Client;
         if (index < 0) {
             return false;
         }
-        fillFields(allRecipes[index].recipe, false);
+        fillFields(allRecipes[index].recipe, true);
         return true;
     }
+    // Felder der Modal Box über Parameter _recipe füllen
+    // Eingabebereitschaft der Felder werden über den Parameter _reaonly gesteuert
     function fillFields(_recipe, _readOnly) {
         let readOnly = "";
         if (_readOnly) {
-            readOnly = " readonly='true'";
+            readOnly = "readonly";
         }
         let recipename = document.getElementById("recipename");
         recipename.value = _recipe.recipename;
@@ -441,11 +482,12 @@ var Client;
             if (i < _recipe.ingredients.length) {
                 ingredient = _recipe.ingredients[i];
             }
-            ingredients.innerHTML = ingredients.innerHTML + "<input name='ingredient' value='" + ingredient + "'" + readOnly + ">";
+            ingredients.innerHTML = ingredients.innerHTML + "<input name='ingredient' value='" + ingredient + "' " + readOnly + ">";
         }
         let preparation = document.getElementById("preparation");
         preparation.value = _recipe.preparation;
     }
+    // Kennzeichen ♡ für Favorit über Parameter _user und _recipeID ermitteln
     function getFavoriteImage(_recipeID, _user) {
         let favoriteImage = "";
         if (_user != null) {
@@ -456,6 +498,8 @@ var Client;
         }
         return favoriteImage;
     }
+    // Bilder für Darstellung in der Liste aufbereiten und Klassenname mit Parameter _recipeID setzen
+    // Dadurch kann über den Klassennamen ein ausgewähltes RRezept wieder gefunden werden
     function getEditImage(_recipeID) {
         return "<img src='Pictures/edit.png' id='edit' class='" + _recipeID + "' alt='edit'>";
     }

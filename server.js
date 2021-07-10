@@ -10,6 +10,7 @@ var Server;
     let collection;
     startServer();
     connectDB();
+    // Server starten
     async function startServer() {
         console.log("Starting server");
         let port = Number(process.env.PORT);
@@ -19,6 +20,7 @@ var Server;
         server.addListener("request", handleRequest);
         server.listen(port);
     }
+    // Datenbank verbinden
     async function connectDB() {
         console.log("Starting DB");
         let options = { useNewUrlParser: true, useUnifiedTopology: true };
@@ -26,6 +28,14 @@ var Server;
         await mongoClient.connect();
         collection = mongoClient.db("schmackofatz").collection("User");
     }
+    // Serveranforderungen behandeln:
+    //    "registration"    Benutzer registrieren
+    //    "login"           Benutzer einloggen
+    //    "saveRecipe"      Rezept speichern
+    //    "deleteRecipe"    Rezept löschen
+    //    "toggleFavorite"  Favorit hinzufügen/entfernen
+    //    "readUser"        Benutzer lesen
+    //    "readAllRecipes"  Alle Rezepte lesen
     async function handleRequest(_request, _response) {
         _response.setHeader("content-type", "text/html; charset=utf-8");
         _response.setHeader("Access-Control-Allow-Origin", "*");
@@ -77,6 +87,9 @@ var Server;
         _response.end();
     }
     Server.handleRequest = handleRequest;
+    // Neuen Benutzer auf der Datenbank speichern
+    // Rückgabe false, wenn der Benutzer oder das Passwort leer ist oder schon schon auf der Datenbank existiert
+    // Rückgabe true, wenn der Benutzer erfolgreich auf der Datenbank gespeichert wurde
     async function checkRegistration(_username, _password) {
         if (_username == null || _username == "" || _password == null || _password == "") {
             return false;
@@ -89,6 +102,9 @@ var Server;
         collection.insertOne(newUser);
         return true;
     }
+    // Benutzer einloggen
+    // Rückgabe false, wenn der Benutzer oder das Passwort nicht auf der Datenbank existiert
+    // Rückgabe true, wenn der Benutzer erfolgreich auf der Datenbank gelesen wurde
     async function checkLogin(_username, _password) {
         let user = await collection.findOne({ _id: _username });
         if (user == null || user.password != _password) {
@@ -96,6 +112,9 @@ var Server;
         }
         return true;
     }
+    // Rezept des Benutzers speichern oder ändern
+    // Rückgabe false, wenn der Benutzer oder das Rezept beim Ändern auf der Datenbank nicht existiert
+    // Rückgabe true, wenn das Rezept erfolgreich auf der Datenbank gespeichert wurde
     async function checkSaveRecipe(_request, _mode, _username, _recipeID, _recipename, _ingredients, _preparation) {
         let user = await collection.findOne({ _id: _username });
         if (user == null) {
@@ -124,6 +143,9 @@ var Server;
         collection.updateOne({ _id: user._id }, { $set: { recipes: user.recipes } });
         return true;
     }
+    // Rezept des Benutzers löschen
+    // Rückgabe false, wenn der Benutzer oder das Rezept auf der Datenbank nicht existiert
+    // Rückgabe true, wenn das Rezept erfolgreich aus der Datenbank gelöscht wurde
     async function checkDeleteRecipe(_username, _recipeID) {
         let user = await collection.findOne({ _id: _username });
         if (user == null) {
@@ -137,6 +159,9 @@ var Server;
         collection.updateOne({ _id: user._id }, { $set: { recipes: user.recipes } });
         return true;
     }
+    // Favorit des Benutzers hinzufügen oder entfernen
+    // Rückgabe false, wenn der Benutzer oder der Favorit auf der Datenbank nicht existiert
+    // Rückgabe true, wenn dar Favorit erfolgreich auf der Datenbank gespeichert wurde
     async function checkFavorite(_username, _recipeID) {
         let user = await collection.findOne({ _id: _username });
         if (user == null) {
@@ -146,6 +171,9 @@ var Server;
         let index = user.favorites.findIndex(objectID => String(objectID) == _recipeID);
         if (index < 0) {
             let index = allRecipes.findIndex(objectID => String(objectID.recipe.recipeID) == _recipeID);
+            if (index < 0) {
+                return false;
+            }
             let newFavorite = allRecipes[index].recipe.recipeID;
             user.favorites.push(newFavorite);
         }
@@ -155,6 +183,7 @@ var Server;
         collection.updateOne({ _id: user._id }, { $set: { favorites: user.favorites } });
         return true;
     }
+    // Alle Rezepte aus der Datenbank lesen
     async function readAllRecipes() {
         let allRecipes = new Array();
         await collection.find({}).forEach(user => {
@@ -167,6 +196,10 @@ var Server;
         });
         return allRecipes;
     }
+    // Index des Rezepts über die Rezept ID ermitteln
+    // Parameter:
+    //    _recipes:  Array mit Rezepten
+    //    _recipeID: Die Rezept ID, die gesucht werden soll
     function getRecipeByID(_recipes, _recipeID) {
         // https://stackoverflow.com/questions/58971067/how-do-i-get-the-index-of-object-in-array-using-angular
         return _recipes.findIndex(recipe => String(recipe.recipeID) == _recipeID);
