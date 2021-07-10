@@ -146,6 +146,7 @@
         cursor: pointer;
     }
     #saveButton {
+        cursor: pointer;
         margin-top: 2vw;
         height: 5vw;
         width: 20vw;
